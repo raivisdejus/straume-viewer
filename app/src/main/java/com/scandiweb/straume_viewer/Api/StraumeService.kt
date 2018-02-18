@@ -1,6 +1,8 @@
 package com.scandiweb.straume_viewer.Api
 
 import android.content.Context
+import com.scandiweb.straume_viewer.Model.PlayListVideo
+import com.scandiweb.straume_viewer.Model.PlayListVideoPage
 import com.scandiweb.straume_viewer.Model.VideoPage
 import io.reactivex.Observable
 
@@ -11,6 +13,7 @@ import retrofit2.http.Url
 import com.scandiweb.straume_viewer.Model.VideoDetails
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -25,18 +28,26 @@ interface StraumeService {
     @GET
     fun getVideos(@Url url: String): Single<VideoPage>
 
+
+    @GET
+    fun getVideosFromPlaylist(@Url url: String): Single<PlayListVideoPage>
+
     @GET
     fun getVideoDetails(@Url toVisit: String): Single<VideoDetails>
 
     companion object Factory {
         fun create(context: Context): StraumeService {
             val responseCache = Cache(File(context.cacheDir, "responses"), 100L * 1024 * 1024)
+
+            val httpLoggingInterceptor = HttpLoggingInterceptor()
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
+
             val okHttpClient = OkHttpClient.Builder()
                     .connectTimeout(5, TimeUnit.MINUTES)
                     .writeTimeout(5, TimeUnit.MINUTES)
                     .readTimeout(5, TimeUnit.MINUTES)
                     // Add logging interceptor to debug HTTP traffic
-                    //.addInterceptor(httpLoggingInterceptor)
+                    .addInterceptor(httpLoggingInterceptor)
                     .addInterceptor({ chain ->
                         val originalResponse = chain.proceed(chain.request())
                         val maxAge = 60 * 60 // read from cache for 1 hour

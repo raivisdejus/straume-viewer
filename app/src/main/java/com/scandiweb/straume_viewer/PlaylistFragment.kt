@@ -8,10 +8,14 @@ import android.support.v17.leanback.app.VerticalGridFragment
 import android.support.v17.leanback.widget.*
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
+import com.scandiweb.straume_viewer.Api.StraumeService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
 class PlaylistFragment : VerticalGridFragment() {
@@ -40,13 +44,11 @@ class PlaylistFragment : VerticalGridFragment() {
 
         prepareBackgroundManager()
         updateBackground(playlist.backgroundImageUrl)
-
-
-
         if (savedInstanceState == null) {
             prepareEntranceTransition()
         }
         setupFragment()
+
     }
 
     private fun setupFragment() {
@@ -57,6 +59,13 @@ class PlaylistFragment : VerticalGridFragment() {
         // After 500ms, start the animation to transition the cards into view.
         Handler().postDelayed({ startEntranceTransition() }, 500)
         onItemViewClickedListener = ItemViewClickedListener()
+        StraumeService.create(context)
+            .getVideosFromPlaylist(playlist.videoUrl !!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                videoPage -> Log.d("Playslist", "We got video ${videoPage.videos})")
+            })
     }
 
 
