@@ -22,11 +22,6 @@ import android.support.v17.leanback.media.PlaybackGlue
 import com.scandiweb.straume_viewer.Api.StraumeService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import okhttp3.OkHttpClient
-import pl.droidsonroids.retrofit2.JspoonConverterFactory
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import java.util.concurrent.TimeUnit
 
 /** Handles video playback with media controls. */
 class PlaybackVideoFragment : VideoSupportFragment() {
@@ -36,11 +31,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (_, title, description, _, _, videoUrl) =
-                activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as VideoItem
-
-
-
+        val videoItem = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as VideoItem
 
         val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
         mTransportControlGlue = StraumeViewerMediaPlayerGlue(activity)
@@ -56,29 +47,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             }
         })
 
-//        val httpLoggingInterceptor = HttpLoggingInterceptor()
-//        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
-        val clientBuilder = OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.MINUTES)
-//                .addInterceptor(httpLoggingInterceptor)
-                .writeTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES)
-
-        val okHttpClient = clientBuilder.build()
-
-        val retrofit = Retrofit.Builder()
-                //.baseUrl("https://www.thedroidsonroids.com/")
-                .baseUrl("http://straume.lmt.lv/")
-                .addConverterFactory(JspoonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(okHttpClient)
-                .build()
-
-        val straumeService: StraumeService = retrofit.create(StraumeService::class.java)
-
-        straumeService
-                .getVideoDetails(videoUrl!!)
+        StraumeService.create(context)
+                .getVideoDetails(videoItem.videoUrl!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ video ->
