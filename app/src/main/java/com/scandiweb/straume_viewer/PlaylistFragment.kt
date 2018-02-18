@@ -8,6 +8,7 @@ import android.support.v17.leanback.app.BackgroundManager
 import android.support.v17.leanback.app.VerticalGridFragment
 import android.support.v17.leanback.widget.ArrayObjectAdapter
 import android.support.v17.leanback.widget.OnItemViewClickedListener
+import android.support.v17.leanback.widget.OnItemViewSelectedListener
 import android.support.v17.leanback.widget.VerticalGridPresenter
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
@@ -73,6 +74,10 @@ class PlaylistFragment : VerticalGridFragment() {
             intent = Intent(activity, PlaybackActivity::class.java)
             intent.putExtra(DetailsActivity.MOVIE, item as VideoItem)
             startActivity(intent)
+        })
+
+        setOnItemViewSelectedListener({_, item, _, _ ->
+            updateBackground((item as VideoItem).backgroundImageUrl)
         })
     }
 
