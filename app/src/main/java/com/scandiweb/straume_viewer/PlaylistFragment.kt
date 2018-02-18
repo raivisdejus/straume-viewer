@@ -8,10 +8,10 @@ import android.support.v17.leanback.app.BackgroundManager
 import android.support.v17.leanback.app.VerticalGridFragment
 import android.support.v17.leanback.widget.ArrayObjectAdapter
 import android.support.v17.leanback.widget.OnItemViewClickedListener
-import android.support.v17.leanback.widget.OnItemViewSelectedListener
 import android.support.v17.leanback.widget.VerticalGridPresenter
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
@@ -30,6 +30,7 @@ class PlaylistFragment : VerticalGridFragment() {
     lateinit var mBackgroundManager: BackgroundManager
     lateinit var mDefaultBackground: Drawable
     lateinit var  mMetrics : DisplayMetrics
+    var selectedItem : VideoItem? = null
 
     private fun prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(activity)
@@ -50,9 +51,16 @@ class PlaylistFragment : VerticalGridFragment() {
             prepareEntranceTransition()
         }
         setupFragment()
-
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Playlist", "selected item $selectedItem")
+        selectedItem ?.let {
+         updateBackground(it.backgroundImageUrl)
+        }
+    }
     private fun setupFragment() {
         val gridPresenter = VerticalGridPresenter()
         gridPresenter.numberOfColumns = NUM_COLUMNS
@@ -71,16 +79,19 @@ class PlaylistFragment : VerticalGridFragment() {
 
         onItemViewClickedListener = OnItemViewClickedListener({ _, item, _, _ ->
             val intent :Intent?
+            item as VideoItem
+            selectedItem = item
             intent = Intent(activity, PlaybackActivity::class.java)
-            intent.putExtra(DetailsActivity.MOVIE, item as VideoItem)
+            intent.putExtra(DetailsActivity.MOVIE, item)
             startActivity(intent)
         })
 
         setOnItemViewSelectedListener({_, item, _, _ ->
-            updateBackground((item as VideoItem).backgroundImageUrl)
+            item as VideoItem
+
+            updateBackground((item).backgroundImageUrl)
         })
     }
-
 
     private fun showVideos(videos: List<PlayListVideo>?) {
         videos?.forEach {

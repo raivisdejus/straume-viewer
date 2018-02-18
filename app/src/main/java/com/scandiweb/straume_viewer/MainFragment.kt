@@ -15,7 +15,6 @@
 package com.scandiweb.straume_viewer
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -25,9 +24,6 @@ import android.support.v17.leanback.widget.*
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
-import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -52,6 +48,7 @@ class MainFragment : BrowseFragment() {
     private lateinit var mMetrics: DisplayMetrics
     private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
+    private var selectedItem: VideoItem? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -146,6 +143,7 @@ class MainFragment : BrowseFragment() {
                                    rowViewHolder: RowPresenter.ViewHolder, row: Row) {
 
             if (item is VideoItem) {
+                selectedItem = item
                 val intent :Intent?
                 if (item.isPlaylist){
                     intent = Intent(activity, PlaylistActivity::class.java)
@@ -154,7 +152,6 @@ class MainFragment : BrowseFragment() {
                     intent = Intent(activity, PlaybackActivity::class.java)
                     intent.putExtra(DetailsActivity.MOVIE, item)
                 }
-
                 val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                         activity,
                         (itemViewHolder.view as ImageCardView).mainImageView,
@@ -198,6 +195,13 @@ class MainFragment : BrowseFragment() {
         mBackgroundTimer?.cancel()
     }
 
+    override fun onResume() {
+        super.onResume()
+        selectedItem?.let {
+            updateBackground(it.backgroundImageUrl)
+        }
+    }
+
     private fun startBackgroundTimer() {
         mBackgroundTimer?.cancel()
         mBackgroundTimer = Timer()
@@ -210,26 +214,6 @@ class MainFragment : BrowseFragment() {
             mHandler.post { updateBackground(mBackgroundUri) }
         }
     }
-
-    private inner class GridItemPresenter : Presenter() {
-        override fun onCreateViewHolder(parent: ViewGroup): Presenter.ViewHolder {
-            val view = TextView(parent.context)
-            view.layoutParams = ViewGroup.LayoutParams(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
-            view.isFocusable = true
-            view.isFocusableInTouchMode = true
-            view.setBackgroundColor(ContextCompat.getColor(activity, R.color.default_background))
-            view.setTextColor(Color.WHITE)
-            view.gravity = Gravity.CENTER
-            return Presenter.ViewHolder(view)
-        }
-
-        override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
-            (viewHolder.view as TextView).text = item as String
-        }
-
-        override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {}
-    }
-
     companion object {
         private val TAG = "MainFragment"
 
