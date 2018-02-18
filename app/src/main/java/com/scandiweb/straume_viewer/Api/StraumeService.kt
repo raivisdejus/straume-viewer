@@ -47,7 +47,7 @@ interface StraumeService {
                     .writeTimeout(5, TimeUnit.MINUTES)
                     .readTimeout(5, TimeUnit.MINUTES)
                     // Add logging interceptor to debug HTTP traffic
-                    .addInterceptor(httpLoggingInterceptor)
+                    //.addInterceptor(httpLoggingInterceptor)
                     .addInterceptor({ chain ->
                         val originalResponse = chain.proceed(chain.request())
                         val maxAge = 60 * 60 // read from cache for 1 hour

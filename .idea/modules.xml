@@ -3,8 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/straumeviewer.iml" filepath="$PROJECT_DIR$/straumeviewer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/straumviewer.iml" filepath="$PROJECT_DIR$/straumviewer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/straume-viewer.iml" filepath="$PROJECT_DIR$/straume-viewer.iml" />
     </modules>
   </component>
 </project>
