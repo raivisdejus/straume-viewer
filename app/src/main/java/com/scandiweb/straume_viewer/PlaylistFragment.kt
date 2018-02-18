@@ -1,19 +1,22 @@
 package com.scandiweb.straume_viewer
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.support.v17.leanback.app.BackgroundManager
 import android.support.v17.leanback.app.VerticalGridFragment
-import android.support.v17.leanback.widget.*
+import android.support.v17.leanback.widget.ArrayObjectAdapter
+import android.support.v17.leanback.widget.OnItemViewClickedListener
+import android.support.v17.leanback.widget.VerticalGridPresenter
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
-import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.scandiweb.straume_viewer.Api.StraumeService
+import com.scandiweb.straume_viewer.Model.PlayListVideo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -22,9 +25,7 @@ class PlaylistFragment : VerticalGridFragment() {
     companion object {
         val NUM_COLUMNS = 5
     }
-
     lateinit var playlist : VideoItem
-
     lateinit var mBackgroundManager: BackgroundManager
     lateinit var mDefaultBackground: Drawable
     lateinit var  mMetrics : DisplayMetrics
@@ -55,19 +56,40 @@ class PlaylistFragment : VerticalGridFragment() {
         val gridPresenter = VerticalGridPresenter()
         gridPresenter.numberOfColumns = NUM_COLUMNS
         setGridPresenter(gridPresenter)
-        // loaderManager.initLoader(ALL_VIDEOS_LOADER, null, this)
-        // After 500ms, start the animation to transition the cards into view.
+        adapter = ArrayObjectAdapter(CardPresenter())
         Handler().postDelayed({ startEntranceTransition() }, 500)
-        onItemViewClickedListener = ItemViewClickedListener()
         StraumeService.create(context)
             .getVideosFromPlaylist(playlist.videoUrl !!)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                videoPage -> Log.d("Playslist", "We got video ${videoPage.videos})")
+                videoPage ->
+                    showVideos(videos = videoPage.videos)
+
             })
+
+        onItemViewClickedListener = OnItemViewClickedListener({ _, item, _, _ ->
+            val intent :Intent?
+            intent = Intent(activity, PlaybackActivity::class.java)
+            intent.putExtra(DetailsActivity.MOVIE, item as VideoItem)
+            startActivity(intent)
+        })
     }
 
+
+    private fun showVideos(videos: List<PlayListVideo>?) {
+        videos?.forEach {
+            val videoItem = VideoItem()
+            // videoItem.id = listRowAdapter.size().toLong()
+            videoItem.title = it.title
+            videoItem.cardImageUrl = it.imageUrl
+            videoItem.backgroundImageUrl = it.imageUrl
+            videoItem.videoUrl = it.url
+            videoItem.isPlaylist = it.isPlaylist
+            (adapter as ArrayObjectAdapter).add(videoItem)
+            adapter.notifyItemRangeChanged(adapter.size(), 1)
+        }
+    }
 
     private fun updateBackground(uri: String?) {
         val width = mMetrics.widthPixels
@@ -85,45 +107,6 @@ class PlaylistFragment : VerticalGridFragment() {
                         })
     }
 
-    /*
-    fun onCreateLoader(id: Int, args: Bundle): Loader<Cursor> {
-        return CursorLoader(
-                activity,
-                VideoContract.VideoEntry.CONTENT_URI, // selection clause
-                null  // sort order
-                , null, null, null
-        )// projection
-        // selection
-    }
-    */
-
-    /*
-    fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor?) {
-        if (loader.getId() === ALL_VIDEOS_LOADER && cursor != null && cursor!!.moveToFirst()) {
-            mVideoCursorAdapter.changeCursor(cursor)
-        }
-    }
-    */
-
-    private inner class ItemViewClickedListener : OnItemViewClickedListener {
-        override  fun onItemClicked(itemViewHolder: Presenter.ViewHolder, item: Any,
-                                    rowViewHolder: RowPresenter.ViewHolder, row: Row) {
-
-
-            // TODO Launch the playlist inside the video
-//            if (item is Video) {
-//                val video = item as Video
-//
-//                val intent = Intent(activity, VideoDetailsActivity::class.java)
-//                intent.putExtra(VideoDetailsActivity.VIDEO, video)
-//
-//                val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                        activity,
-//                        (itemViewHolder.view as ImageCardView).mainImageView,
-//                        VideoDetailsActivity.SHARED_ELEMENT_NAME).toBundle()
-//                activity.startActivity(intent, bundle)
-        }
-    }
 }
 
 
