@@ -1,3 +1,5 @@
+Find the app on [Play Store](https://play.google.com/store/apps/details?id=com.scandiweb.straume_viewer)
+
 Created by [@raivisdejus](https://github.com/raivisdejus) and [@kevinlg](https://github.com/kevinlg)
 
 App based on https://github.com/googlesamples/androidtv-Leanback
