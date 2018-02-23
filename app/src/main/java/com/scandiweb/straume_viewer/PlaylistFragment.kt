@@ -87,9 +87,9 @@ class PlaylistFragment : VerticalGridFragment() {
         })
 
         setOnItemViewSelectedListener({_, item, _, _ ->
-            item as VideoItem
-
-            updateBackground((item).backgroundImageUrl)
+            item?.let{
+                updateBackground((item as VideoItem).backgroundImageUrl)
+            }
         })
     }
 
