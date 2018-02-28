@@ -20,4 +20,7 @@
     <string name="video_error_unknown_error">Failed to load video</string>
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
+
+    <!-- Misc -->
+    <string name="playback_tag">PLAYBACK_TAG</string>
 </resources>

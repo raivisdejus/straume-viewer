@@ -35,7 +35,7 @@ class PlaylistFragment : VerticalGridFragment() {
     private fun prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(activity)
         mBackgroundManager.attach(activity.window)
-        mDefaultBackground = ContextCompat.getDrawable(activity, R.drawable.default_background)
+        mDefaultBackground = ContextCompat.getDrawable(activity, R.drawable.default_background)!!
         mMetrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(mMetrics)
     }
