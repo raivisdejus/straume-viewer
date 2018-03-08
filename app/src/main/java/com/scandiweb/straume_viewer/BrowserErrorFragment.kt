@@ -15,13 +15,12 @@ package com.scandiweb.straume_viewer
 
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.View
 
 /**
  * This class demonstrates how to extend [android.support.v17.leanback.app.ErrorFragment].
  */
-class ErrorFragment : android.support.v17.leanback.app.ErrorFragment() {
+class BrowserErrorFragment : android.support.v17.leanback.app.ErrorFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +34,7 @@ class ErrorFragment : android.support.v17.leanback.app.ErrorFragment() {
 
         buttonText = resources.getString(R.string.dismiss_error)
         buttonClickListener = View.OnClickListener {
-            fragmentManager.beginTransaction().remove(this@ErrorFragment).commit()
+            fragmentManager.beginTransaction().remove(this@BrowserErrorFragment).commit()
         }
     }
 

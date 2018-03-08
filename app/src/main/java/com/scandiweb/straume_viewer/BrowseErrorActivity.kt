@@ -29,7 +29,7 @@ import android.widget.ProgressBar
  */
 class BrowseErrorActivity : Activity() {
 
-    private lateinit var mErrorFragment: ErrorFragment
+    private lateinit var mErrorFragment: BrowserErrorFragment
     private lateinit var mSpinnerFragment: SpinnerFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,7 @@ class BrowseErrorActivity : Activity() {
     }
 
     private fun testError() {
-        mErrorFragment = ErrorFragment()
+        mErrorFragment = BrowserErrorFragment()
         fragmentManager.beginTransaction().add(R.id.main_browse_fragment, mErrorFragment).commit()
 
         mSpinnerFragment = SpinnerFragment()

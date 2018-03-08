@@ -11,6 +11,8 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Url
 import com.scandiweb.straume_viewer.Model.VideoDetails
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,7 +30,6 @@ interface StraumeService {
     @GET
     fun getVideos(@Url url: String): Single<VideoPage>
 
-
     @GET
     fun getVideosFromPlaylist(@Url url: String): Single<PlayListVideoPage>
 
@@ -37,8 +38,6 @@ interface StraumeService {
 
     companion object Factory {
         fun create(context: Context): StraumeService {
-            val responseCache = Cache(File(context.cacheDir, "responses"), 100L * 1024 * 1024)
-
             val httpLoggingInterceptor = HttpLoggingInterceptor()
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
@@ -48,13 +47,6 @@ interface StraumeService {
                     .readTimeout(5, TimeUnit.MINUTES)
                     // Add logging interceptor to debug HTTP traffic
                     //.addInterceptor(httpLoggingInterceptor)
-                    .addInterceptor({ chain ->
-                        val originalResponse = chain.proceed(chain.request())
-                        val maxAge = 60 * 60 // read from cache for 1 hour
-                        originalResponse.newBuilder().header("Cache-Control", "public, max-age=" + maxAge)
-                                .build()
-                    })
-                    .cache(responseCache)
                     .build()
             val retrofit = Retrofit.Builder()
                     .baseUrl("http://straume.lmt.lv/")
