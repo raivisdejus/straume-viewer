@@ -18,10 +18,12 @@ class VideoDetails {
         get() {
             for (script in this.scripts !!) {
                 val scriptContent = script.toString()
-                val httpPos = scriptContent.indexOf("http")
+                val httpPos = scriptContent.indexOf("file: \"")
                 val mp4Pos = scriptContent.indexOf(".mp4")
+
                 if (httpPos != -1 && mp4Pos != -1) {
-                    return scriptContent.substring(httpPos, mp4Pos + ".mp4".length)
+                    // will force url to have http schema
+                    return "http:" + scriptContent.substring(httpPos + "file: \"".length, mp4Pos + ".mp4".length)
                 }
             }
             return null
